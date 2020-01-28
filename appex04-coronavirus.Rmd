@@ -1,7 +1,7 @@
 ---
 title: "Mapping the Coronavirus Outbreak"
-author: ""
-date: ""
+author: "Garrett Allen"
+date: "01-28-2020"
 output: 
   html_document:
     toc: true
@@ -11,9 +11,7 @@ output:
 ---
 
 ```{r set-up, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      comment = "#>", highlight = TRUE,
-                      fig.align = "center")
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,comment = "#>", highlight = TRUE,fig.align = "center")
 ```
 
 # Getting started
@@ -22,10 +20,10 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
    in RStudio Cloud under the STA 199 class space.
 
 2. Configure git
-      ```{r config-git-ex, eval=FALSE}
-      library(usethis)
-      use_git_config(user.name="your name", user.email="your email")
-      ```
+```{r config-git-ex, eval=FALSE}
+library(usethis)
+use_git_config(user.name="Garrett.Allen", user.email="gpa5@duke.edu")
+```
 
 # Packages and Data
 
@@ -43,6 +41,7 @@ read each of these in with function `st_read()` and save them as `world` and
 ```{r}
 world <- st_read("data/world.shp", quiet = TRUE)
 virus <- st_read("data/coronavirus.shp", quiet = TRUE)
+nc <- st_read(system.file("shape/nc.shp", package = "sf"), quiet = TRUE)
 ```
 
 # Tasks
@@ -56,9 +55,12 @@ object? What type of geometry is associated with each `sf` object?
 world
 ```
 
+In "world", there are 241 observations of 9 fields. For this chart, the geometry is multipolygon.
 ```{r task-1-virus}
 virus
 ```
+
+in "virus" there are 44 observations and also 9 fields. For this plot, the geometry is point. 
 
 ## Task 2
 
@@ -68,7 +70,8 @@ Use object `world` to create a world map of the countries. You'll want to use
 functions `ggplot()` and `geom_sf()`.
 
 ```{r task-2-p1}
-
+ggplot(world) + 
+  geom_sf()
 ```
 
 #### Part 2
@@ -77,8 +80,12 @@ Build on your map from Part 1 so that the countries have a fill color
 associated with the population estimate. Variable `pop_est` is in millions.
 Be sure to label your map.
 
-```{r task-2-p2}
-
+```{r task-2-p2, fig.width = 12, fig.height = 12}
+ggplot(world) + 
+  geom_sf(aes(fill = pop_est),) + 
+  labs(title = "World Population In Millions", fill = "Millions") + 
+  scale_fill_gradient(low = "lightblue", high = "red") + 
+  theme_bw(base_size = 30)
 ```
 
 ## Task 3
@@ -112,7 +119,10 @@ number of confirmed cases. Refer to slides 31-32 as a guide.
 
 ```{r task-4, fig.width=9, fig.height=6}
 ggplot(data = china) +
-  geom_sf(fill = "#DE2910")
+  geom_sf(fill = "#DE2910") + 
+  geom_sf(data = china_cv, aes(size = confrmd), color = "yellow", show.legend = "point") + 
+  labs(title = "Coronavirus Outbreak in China", subtitle = "As of Jan 25, 2020", size = "Confirmed Cases") + 
+  theme_bw()
 ```
 
 *Hints:*
